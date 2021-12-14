@@ -1,0 +1,238 @@
+Manager:
+    MainScreen:
+    InputScreen:
+    RecommendScreen:
+
+<MainScreen>
+    name: 'main_screen'
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        MDToolbar:
+            height: dp(60)
+            title: 'SmartSugar'
+            margin: 0
+
+        MDBottomNavigation:
+
+            #MDBottomNavigationItem:
+            #    name: 'chart_screen'
+            #    icon: 'chart-line'
+            #    use_text: False
+
+            #    MDBoxLayout:
+            #        id: box
+            #        adaptive_size: True
+            #        spacing: dp(56)
+            #        pos_hint: {"center_x": .5, "center_y": .5}
+
+            #    MDBoxLayout:
+            #        orientation: "vertical"
+            #        md_bg_color: app.theme_cls.bg_normal
+
+            #        Chart:
+            #            id: chart
+            #            texture: self.image
+
+            MDBottomNavigationItem:
+                name: 'record_screen'
+                icon: 'format-list-bulleted'
+                use_text: False
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    md_bg_color: app.theme_cls.bg_normal
+
+                    ScrollView:
+
+                        MDList:
+                            id: container
+                            on_kv_post: root.load_record()
+
+                MDFloatingActionButtonSpeedDial:
+                    id: speed_dial
+                    data: {'afegir nova entrada': 'file-plus-outline', 'afegir amb recomanació': 'file-plus'}
+                    root_button_anim: True
+                    callback: root.callback
+                    label_text_color: app.theme_cls.opposite_text_color
+
+            MDBottomNavigationItem:
+                name: 'settings_screen'
+                icon: 'cog-outline'
+                use_text: False
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    md_bg_color: app.theme_cls.bg_normal
+                    adaptive_height: True
+                    pos_hint: {'center_x': 0.5, 'top': 1}
+
+                    MDList:
+                        id: settings
+
+                        ThreeLineAvatarListItem:
+                            font_style: 'H5'
+                            id: dataset_item
+                            text: 'DATASET'
+                            on_kv_post: root.load_dataset_label()
+                            on_release: root.open_dataset_actions()
+                            IconLeftWidget:
+                                icon: "database-outline"
+                        
+                        OneLineAvatarListItem:
+                            font_style: 'H5'
+                            id: model_item
+                            text: 'MODEL'
+                            on_release: root.open_model_actions()
+                            IconLeftWidget:
+                                icon: "robot-outline"
+
+                        TwoLineAvatarListItem:
+                            font_style: 'H5'
+                            id: record_item
+                            text: 'REGISTRE'
+                            on_kv_post: root.load_record_label()
+                            on_release: root.open_record_actions()
+                            IconLeftWidget:
+                                icon: "format-list-bulleted"
+
+<TextField@MDTextField>
+    mode: 'rectangle'
+    size_hint: (0.5, 1)
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    multiline: False
+    input_type: 'number'
+
+<InfoIcon@MDIconButton>
+    icon: 'information-outline'
+    theme_text_color: 'Custom'
+    text_color: app.theme_cls.disabled_hint_text_color
+
+
+<InputScreen>
+    name: 'input_screen'
+
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'top'
+        padding: [0, dp(10), dp(10), 0]
+
+        InfoIcon:
+            on_release: root.open_help_dialog()
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: app.theme_cls.bg_normal
+        adaptive_height: True
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        spacing: 10
+        
+        TextField:
+            id: field1
+            hint_text: "Glucosa en sang"
+            on_text: root.get_values(args[1], 0)
+            input_filter: 'int'
+
+        MDDropDownItem:
+            id: field2
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            on_kv_post: root.build_menu()
+            on_release: root.open_tendency_menu()
+
+        TextField:
+            id: field3
+            hint_text: "Unitats"
+            on_text: root.get_values(args[1], 2)
+            input_filter: 'float'
+
+        TextField:
+            id: field4
+            hint_text: "Racions"
+            on_text: root.get_values(args[1], 3)
+            input_filter: 'float'
+
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'bottom'
+        padding: [0, 0, dp(20), dp(20)]
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            md_bg_color: app.theme_cls.bg_normal
+            adaptive_height: True
+            adaptive_width: True
+            spacing: dp(10)
+
+            MDFlatButton:
+                text: 'Cancel·lar'
+                font_style: 'Button'
+                theme_text_color: 'Custom'
+                on_release: root.remove()
+
+            MDRaisedButton:
+                text: 'Afegir'
+                font_style: 'Button'
+                on_release: root.send_input()
+                theme_text_color: 'Custom'
+
+<RecommendScreen>
+    name: "recommend_screen"
+
+    MDSpinner:
+        size_hint: None, None
+        size: dp(46), dp(46)
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        active: True if root.processing else False
+
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'top'
+        padding: [0, dp(10), dp(10), 0]
+
+        InfoIcon:
+            on_release: root.open_help_dialog()
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: app.theme_cls.bg_normal
+        adaptive_height: True
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        spacing: 10
+
+        TextField:
+            id: recom_field1
+            hint_text: "Glucosa en sang"
+            on_text: root.get_values(args[1], 0)
+            input_filter: 'int'
+
+        MDDropDownItem:
+            id: recom_field2
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            on_kv_post: root.build_menu()
+            on_release: root.open_tendency_menu()
+
+
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'bottom'
+        padding: [0, 0, dp(20), dp(20)]
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            md_bg_color: app.theme_cls.bg_normal
+            adaptive_height: True
+            adaptive_width: True
+            spacing: dp(10)
+
+            MDFlatButton:
+                text: 'Cancel·lar'
+                font_style: 'Button'
+                theme_text_color: 'Custom'
+                on_release: root.remove()
+
+            MDRaisedButton:
+                text: 'Afegir'
+                font_style: 'Button'
+                on_release: root.send_input()
+                theme_text_color: 'Custom'
